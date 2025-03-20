@@ -1,0 +1,268 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="Responsive Admin &amp; Dashboard Template based on Bootstrap 5">
+	<meta name="author" content="AdminKit">
+	<meta name="keywords"
+		content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
+
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link rel="shortcut icon" href="img/icons/icon-48x48.png" />
+
+	<link rel="canonical" href="https://demo-basic.adminkit.io/" />
+
+	<title>Người thiết kế</title>
+
+	<link rel="stylesheet" type="text/css" href="{% static 'css/app.css' %}">
+
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+	<style>
+		.pagination {
+			justify-content: center;
+			margin-top: 20px;
+			margin-bottom: 20px;
+		}
+
+		.pagination .page-item {
+			margin: 0 5px;
+		}
+
+		.pagination .page-link {
+			border: 1px solid #ddd;
+			padding: 10px 20px;
+			font-size: 16px;
+			color: #007bff;
+			background-color: #fff;
+			transition: background-color 0.3s, color 0.3s;
+		}
+
+		.pagination .page-link:hover {
+			background-color: #007bff;
+			color: #fff;
+		}
+
+		.pagination .page-item.active .page-link {
+			background-color: #007bff;
+			border-color: #007bff;
+			color: white;
+		}
+
+		/* Disabled state */
+		.pagination .page-item.disabled .page-link {
+			color: #ccc;
+			border-color: #ddd;
+			pointer-events: none;
+		}
+
+		/* Add a little border radius for rounded corners */
+		.pagination .page-link {
+			border-radius: 5px;
+		}
+
+		.custom-pagination {
+			display: flex;
+			justify-content: center;
+			gap: 10px;
+			margin-top: 20px;
+			margin-bottom: 20px;
+		}
+
+		/* Style the individual page items */
+		.custom-pagination .page-item {
+			display: inline-block;
+			padding: 10px 15px;
+			border: 1px solid #ddd;
+			border-radius: 5px;
+			color: #007bff;
+			font-size: 16px;
+			text-decoration: none;
+			cursor: pointer;
+			transition: background-color 0.3s, color 0.3s;
+		}
+
+		/* Hover effect for page items */
+		.custom-pagination .page-item:hover {
+			background-color: #007bff;
+			color: white;
+		}
+
+		/* Active page styling */
+		.custom-pagination .page-item.active {
+			background-color: #007bff;
+			color: white;
+			border-color: #007bff;
+		}
+
+		/* Disabled page styling */
+		.custom-pagination .page-item.disabled {
+			color: #ccc;
+			border-color: #ddd;
+			pointer-events: none;
+		}
+
+		/* Pagination buttons (Previous/Next) */
+		.custom-pagination .page-item {
+			padding: 10px 20px;
+			font-weight: bold;
+		}
+
+		/* Remove border-radius on first and last elements for a more linear look */
+		.custom-pagination .page-item:first-child {
+			border-radius: 5px 0 0 5px;
+		}
+
+		.custom-pagination .page-item:last-child {
+			border-radius: 0 5px 5px 0;
+		}
+	</style>
+
+</head>
+
+<body>
+	<div class="wrapper">
+		<nav id="sidebar" class="sidebar js-sidebar">
+			<div class="sidebar-content js-simplebar">
+				<a class="sidebar-brand" href="{% url 'designer_dashboard' %}">
+					<span class="align-middle">Người thiết kế</span>
+				</a>
+				<ul class="sidebar-nav">
+					<li class="sidebar-header">
+						NGƯỜI THIẾT KẾ
+					</li>
+
+					<li class="sidebar-item active">
+						<a class="sidebar-link" href="{% url 'designer_dashboard' %}">
+							<i class=" align-middle" data-feather="sliders"></i> <span class="align-middle">Trang chủ</span>
+						</a>
+					</li>
+
+					<li class="sidebar-header">
+						Quản lý
+					</li>
+
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="{% url 'designer_product_list' %}">
+							<i class="align-middle" data-feather="check-square"></i>
+							<span class="align-middle">Sản phẩm thiết kế</span>
+						</a>
+					</li>
+
+					<li class="sidebar-item">
+						<a class="sidebar-link" href="{% url 'logout' %}">
+							<i class="align-middle" data-feather="check-square"></i>
+							<span class="align-middle">Đăng xuất</span>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+		<div class="main">
+			<main class="content">
+				<div class="container-fluid p-0">
+					<h1 class="h3 mb-3"><strong>Yêu cầu thiết kế cho sản phẩm {{ product.name }}</strong></h1>
+
+					<div class="mb-3">
+						<a href="{% url 'designer_create_design_request' product.product_id %}" class="btn btn-primary">
+							Tạo yêu cầu thiết kế
+						</a>
+					</div>
+
+					<div class="row">
+						<div class="col-12">
+							<div class="card flex-fill">
+								<table class="table table-hover my-0">
+									<thead>
+										<tr>
+											<th>ID Yêu cầu</th>
+											<th>Nhà thiết kế</th>
+											<th>Mô tả</th>
+											<th>Tình trạng</th>
+											<th>Ngày tạo</th>
+											<th>Tệp tin</th>
+											<th>Phản hồi</th>
+											<th>Thao tác</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for design_request in design_requests %}
+										<tr>
+											<td>{{ design_request.request_id }}</td>
+											<td>{{ design_request.designer.username }}</td>
+											<td>{{ design_request.description }}</td>
+											<td>{{ design_request.get_status_display }}</td>
+											<td>{{ design_request.created_at|date:"d/m/Y" }}</td>
+											<td>
+												{% if design_request.file_path %}
+													<a href="http://localhost:8000/media/{{ design_request.file_path }}" class="btn btn-success btn-sm" target="_blank">Xem tệp tin</a>
+												{% else %}
+													Không có tệp
+												{% endif %}
+											</td>
+											<td>
+												<a href="{% url 'designer_designrequests_feedback_list' design_request.request_id %}" class="btn btn-info btn-sm">Xem các phản hồi</a>
+											</td>
+											<td>
+												<form action="{% url 'designer_delete_design_request' design_request.request_id %}" method="POST" style="display:inline;">
+													{% csrf_token %}
+													<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa yêu cầu này không?')">Xóa</button>
+												</form>
+											</td>
+										</tr>
+										{% empty %}
+										<tr>
+											<td colspan="7" class="text-center">Không có yêu cầu thiết kế cho sản phẩm này.</td>
+										</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+								
+							</div>
+						</div>
+					</div>
+				</div>
+			</main>
+
+
+
+
+
+			<footer class="footer">
+                <div class="container-fluid">
+                    <div class="row text-muted">
+                        <div class="col-6 text-start">
+                            <p class="mb-0">
+                                <a class="text-muted" href="" target="_blank"><strong>Python Django</strong></a> &copy;
+                            </p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <ul class="list-inline">
+                                <li class="list-inline-item">
+                                    <a class="text-muted" href="" target="_blank">Support</a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a class="text-muted" href="" target="_blank">Help Center</a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a class="text-muted" href="" target="_blank">Privacy</a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a class="text-muted" href="" target="_blank">Terms</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+		</div>
+	</div>
+	<script src="{% static 'js/app.js' %}"></script>
+</body>
+
+</html>

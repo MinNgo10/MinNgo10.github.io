@@ -1,0 +1,18 @@
+{% for notification in notifications %}
+    <a href="{{ notification.url }}" class="dropdown-item" style="display: block;">
+        <div class="row">
+            <div class="col-8">{{ notification.message }}</div>
+            <div class="col-4 text-end">
+                {% if not notification.is_read %}
+                    <form class="mark-read-form" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="notification_id" id="notification_id_{{ notification.id }}" value="{{ notification.id }}">
+                        <button type="submit" class="btn btn-sm btn-link">Mark as Read</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </a>
+{% empty %}
+    <a href="#" class="dropdown-item text-center" style="display: block;">Không có thông báo</a>
+{% endfor %}

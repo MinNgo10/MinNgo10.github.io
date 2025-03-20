@@ -1,0 +1,789 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Responsive Admin & Dashboard Template based on Bootstrap 5">
+    <meta name="author" content="AdminKit">
+    <meta name="keywords" content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="shortcut icon" href="img/icons/icon-48x48.png" />
+    <link rel="canonical" href="https://demo-basic.adminkit.io/" />
+    <title>Trưởng phòng - Dashboard</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/app.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Thêm Flatpickr -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
+    
+    <!-- CSS tùy chỉnh cho modal -->
+    <!-- CSS tùy chỉnh cho modal -->
+    <style>
+        .modal-content {
+            border-radius: 10px;
+        }
+        .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .modal-body {
+            padding: 0; /* Bỏ padding mặc định để kiểm soát tốt hơn */
+        }
+        .notification-list {
+            max-height: 250px; /* Giới hạn chiều cao để hiển thị khoảng 5 thông báo */
+            overflow-y: auto; /* Thêm thanh cuộn dọc */
+            padding: 15px; /* Thêm padding bên trong danh sách */
+        }
+        .notification-item {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 50px; /* Đảm bảo mỗi thông báo có chiều cao cố định */
+        }
+        .notification-item.unread {
+            background-color: #e9ecef;
+        }
+        .notification-item.read {
+            background-color: #ffffff;
+        }
+        .notification-item a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .notification-item a:hover {
+            text-decoration: underline;
+        }
+        /* Tùy chỉnh thanh cuộn */
+        .notification-list::-webkit-scrollbar {
+            width: 8px; /* Độ rộng thanh cuộn */
+        }
+        .notification-list::-webkit-scrollbar-thumb {
+            background-color: #888; /* Màu thanh cuộn */
+            border-radius: 4px;
+        }
+        .notification-list::-webkit-scrollbar-thumb:hover {
+            background-color: #555; /* Màu khi hover */
+        }
+    
+        /* Các style khác giữ nguyên */
+        .pagination {
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        /* ... (giữ nguyên các style khác) */
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <nav id="sidebar" class="sidebar js-sidebar">
+            <div class="sidebar-content js-simplebar">
+                <a class="sidebar-brand" href="{% url 'manager_dashboard' %}">
+                    <span class="align-middle">Trưởng phòng</span>
+                </a>
+                <ul class="sidebar-nav">
+                    <li class="sidebar-header">Trưởng phòng</li>
+                    <li class="sidebar-item active">
+                        <a class="sidebar-link" href="{% url 'manager_dashboard' %}">
+                            <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Trang chủ</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="#" id="notification-bell" data-bs-toggle="modal" data-bs-target="#notificationModal">
+                            <i class="align-middle" data-feather="bell"></i> <span class="align-middle">Thông báo</span>
+                            {% if unread_count > 0 %}
+                                <span class="badge bg-danger" id="unread-badge">{{ unread_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="sidebar-header">Quản lý</li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{% url 'manager_product_list' %}">
+                            <i class="align-middle" data-feather="check-square"></i>
+                            <span class="align-middle">Sản phẩm</span>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{% url 'logout' %}">
+                            <i class="align-middle" data-feather="check-square"></i>
+                            <span class="align-middle">Đăng xuất</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="main">
+            <main class="content">
+                <div class="container-fluid p-0">
+                    <h1 class="h3 mb-3"><strong>Thống kê</strong></h1>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-xl-6 col-xxl-5 d-flex">
+                                <div class="w-100">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col mt-0">
+                                                            <h5 class="card-title">Số sản phẩm</h5>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <div class="stat text-primary">
+                                                                <i class="align-middle" data-feather="truck"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <h1 class="mt-1 mb-3">{{ num_products }}</h1>
+                                                </div>
+                                            </div>
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col mt-0">
+                                                            <h5 class="card-title">Số người thiết kế</h5>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <div class="stat text-primary">
+                                                                <i class="align-middle" data-feather="users"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <h1 class="mt-1 mb-3">{{ num_designers }}</h1>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col mt-0">
+                                                            <h5 class="card-title">Số thư ký</h5>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <div class="stat text-primary">
+                                                                <i class="align-middle" data-feather="dollar-sign"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <h1 class="mt-1 mb-3">{{ num_secretary }}</h1>
+                                                </div>
+                                            </div>
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col mt-0">
+                                                            <h5 class="card-title">Số người quản lý</h5>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <div class="stat text-primary">
+                                                                <i class="align-middle" data-feather="shopping-cart"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <h1 class="mt-1 mb-3">{{ num_managers }}</h1>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Thêm biểu đồ hình tròn mới vào đây -->
+                                    <div class="row mt-3">
+                                        <div class="col-12">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h5 class="card-title mb-0">Thống kê tổng sản phẩm theo từng loại</h5>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="chart chart-xs">
+                                                        <canvas id="chartjs-total-pie" style="max-height: 200px; max-width: 200px;"></canvas>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-xxl-3 d-flex order-2 order-xxl-3">
+                                <div class="card flex-fill w-100">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Sản phẩm</h5>
+                                    </div>
+                                    <div class="card-body d-flex">
+                                        <div class="align-self-center w-100">
+                                            <div class="py-3">
+                                                <div class="chart chart-xs">
+                                                    <canvas id="chartjs-dashboard-pie"></canvas>
+                                                </div>
+                                            </div>
+                                            <table class="table mb-0" id="product-stats-table">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>Đang thiết kế</td>
+                                                        <td class="text-end" id="num_products_dang_thiet_ke">{{ num_products_dang_thiet_ke }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Chờ phát hành</td>
+                                                        <td class="text-end" id="num_products_dang_chua_phat_hanh">{{ num_products_dang_chua_phat_hanh }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Đã huỷ</td>
+                                                        <td class="text-end" id="num_products_da_huy">{{ num_products_da_huy }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Đã phát hành</td>
+                                                        <td class="text-end" id="num_products_da_phat_hanh">{{ num_products_da_phat_hanh }}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-xxl-3 d-flex order-1 order-xxl-1">
+                                <div class="card flex-fill">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Calendar</h5>
+                                    </div>
+                                    <div class="card-body d-flex">
+                                        <div class="align-self-center w-100">
+                                            <div class="chart">
+                                                <div id="datetimepicker-dashboard"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+           <!-- Modal hiển thị thông báo -->
+           <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="notificationModalLabel">Thông báo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="notification-list">
+                            {% for notification in notifications %}
+                            <div class="notification-item {% if not notification.is_read %}unread{% else %}read{% endif %}" data-notification-id="{{ notification.notification_id }}">
+                                <div>
+                                    <a href="{{ notification.url }}" onclick="markNotificationAsRead({{ notification.notification_id }})">{{ notification.message }}</a>
+                                    <small class="text-muted d-block time-ago" data-timestamp="{{ notification.created_at.isoformat }}">{{ notification.created_at|date:"d/m/Y H:i" }}</small>
+                                </div>
+                                    {% if not notification.is_read %}
+                                        <form class="mark-read-form" data-notification-id="{{ notification.notification_id }}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="notification_id" value="{{ notification.notification_id }}">
+                                            <button type="submit" class="btn btn-sm btn-primary">Đánh dấu đã đọc</button>
+                                        </form>
+                                    {% else %}
+                                        <span class="text-success">Đã đọc</span>
+                                    {% endif %}
+                                </div>
+                            {% empty %}
+                                <p>Không có thông báo nào.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <footer class="footer">
+                <div class="container-fluid">
+                    <div class="row text-muted">
+                        <div class="col-6 text-start">
+                            <p class="mb-0">
+                                <a class="text-muted" href="" target="_blank"><strong>Python Django</strong></a> ©
+                            </p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <ul class="list-inline">
+                                <li class="list-inline-item">
+                                    <a class="text-muted" href="" target="_blank">Support</a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a class="text-muted" href="" target="_blank">Help Center</a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a class="text-muted" href="" target="_blank">Privacy</a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a class="text-muted" href="" target="_blank">Terms</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+    <script>
+        // Khởi tạo biểu đồ
+        let myPieChart;
+        function initializeChart(data) {
+            const ctx = document.getElementById('chartjs-dashboard-pie').getContext('2d');
+            if (myPieChart) myPieChart.destroy(); // Hủy biểu đồ cũ nếu có
+            myPieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Đang thiết kế', 'Chờ phát hành', 'Đã huỷ', 'Đã phát hành'],
+                    datasets: [{
+                        data: [
+                            data.num_products_dang_thiet_ke || 0,
+                            data.num_products_dang_chua_phat_hanh || 0,
+                            data.num_products_da_huy || 0,
+                            data.num_products_da_phat_hanh || 0
+                        ],
+                        backgroundColor: ['#007bff', '#ffc107', '#dc3545', 'black'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // Khởi tạo biểu đồ tổng số sản phẩm
+        let totalPieChart;
+        function initializeTotalChart(data) {
+            const ctx = document.getElementById('chartjs-total-pie').getContext('2d');
+            if (totalPieChart) totalPieChart.destroy(); // Hủy biểu đồ cũ nếu có
+            totalPieChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Đang thiết kế', 'Chờ phát hành', 'Đã huỷ', 'Đã phát hành'],
+                    datasets: [{
+                        data: [
+                            data.total_dang_thiet_ke || 0,
+                            data.total_dang_chua_phat_hanh || 0,
+                            data.total_da_huy || 0,
+                            data.total_da_phat_hanh || 0
+                        ],
+                        backgroundColor: ['#007bff', '#ffc107', '#dc3545', 'black'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // Cập nhật bảng và biểu đồ
+        function updateStats(data) {
+            console.log('Received data:', data); // Debug
+            document.getElementById('num_products_dang_thiet_ke').textContent = data.num_products_dang_thiet_ke || 0;
+            document.getElementById('num_products_dang_chua_phat_hanh').textContent = data.num_products_dang_chua_phat_hanh || 0;
+            document.getElementById('num_products_da_huy').textContent = data.num_products_da_huy || 0;
+            document.getElementById('num_products_da_phat_hanh').textContent = data.num_products_da_phat_hanh || 0;
+            initializeChart(data);
+        }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Khởi tạo dữ liệu mặc định
+            const initialData = {
+                num_products_dang_thiet_ke: {{ num_products_dang_thiet_ke|default:0 }},
+                num_products_dang_chua_phat_hanh: {{ num_products_dang_chua_phat_hanh|default:0 }},
+                num_products_da_huy: {{ num_products_da_huy|default:0 }},
+                num_products_da_phat_hanh: {{ num_products_da_phat_hanh|default:0 }}
+            };
+            console.log('Initial data:', initialData); // Debug
+            initializeChart(initialData);
+
+            const totalData = {
+                total_dang_thiet_ke: {{ total_dang_thiet_ke|default:0 }},
+                total_dang_chua_phat_hanh: {{ total_dang_chua_phat_hanh|default:0 }},
+                total_da_huy: {{ total_da_huy|default:0 }},
+                total_da_phat_hanh: {{ total_da_phat_hanh|default:0 }}
+            };
+            console.log('Total data:', totalData); // Debug
+            initializeTotalChart(totalData);
+
+            // Khởi tạo Flatpickr
+            flatpickr("#datetimepicker-dashboard", {
+                inline: true,
+                defaultDate: new Date(),
+                dateFormat: "Y-m-d", // Đảm bảo định dạng ngày là YYYY-MM-DD
+                onChange: function(selectedDates, dateStr) {
+                    console.log('Selected date:', dateStr); // Debug
+                    fetch(`/myapp/manager/dashboard/?date=${dateStr}`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        updateStats(data);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching stats:', error);
+                        alert('Có lỗi xảy ra khi tải dữ liệu thống kê. Vui lòng thử lại.');
+                    });
+                }
+            });
+
+            // Xử lý "Mark as Read"
+            document.addEventListener('submit', function(e) {
+                if (e.target && e.target.classList.contains('mark-read-form')) {
+                    e.preventDefault();
+                    const form = e.target;
+                    const notificationId = form.querySelector('input[name="notification_id"]').value;
+                    console.log('Submitting notification ID:', notificationId); // Debug
+                    if (!notificationId) {
+                        console.error('Notification ID is missing!');
+                        alert('Lỗi: Không tìm thấy ID thông báo.');
+                        return;
+                    }
+
+                    const notificationItem = form.closest('.notification-item');
+                    const formData = new FormData(form);
+
+                    fetch('{% url "notifications_list" %}', {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            // Cập nhật giao diện
+                            notificationItem.classList.remove('unread');
+                            notificationItem.classList.add('read');
+
+                            // Thay thế form bằng span "Đã đọc"
+                            const readSpan = document.createElement('span');
+                            readSpan.className = 'text-success';
+                            readSpan.textContent = 'Đã đọc';
+                            form.replaceWith(readSpan);
+
+                            // Cập nhật số badge từ server
+                            const badge = document.getElementById('unread-badge');
+                            if (badge) {
+                                const newCount = data.unread_count; // Sử dụng giá trị từ server
+                                if (newCount > 0) {
+                                    badge.textContent = newCount;
+                                } else {
+                                    badge.remove();
+                                    const bellLink = document.querySelector('#notification-bell');
+                                    bellLink.classList.remove('active'); // Tùy chỉnh nếu cần
+                                }
+                            }
+                        } else {
+                            console.error('Error:', data.message);
+                            alert('Có lỗi xảy ra: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error marking as read:', error);
+                        alert('Có lỗi xảy ra khi đánh dấu đã đọc.');
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script>
+        {% if messages %}
+            {% for message in messages %}
+                swal({
+                    title: "{{ message.tags|title }}",
+                    text: "{{ message }}",
+                    type: "{{ message.tags }}",
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            {% endfor %}
+        {% endif %}
+    </script>
+
+    <style>
+        #chat-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 9999;
+        }
+    
+        #chat-window {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 300px;
+            max-height: 400px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            display: none;
+            flex-direction: column;
+            z-index: 9999;
+        }
+    
+        #chat-messages {
+            overflow-y: auto;
+            flex-grow: 1;
+            padding: 10px;
+            height: 250px;
+        }
+    
+        #chat-input {
+            display: flex;
+            border-top: 1px solid #ccc;
+        }
+    
+        #chat-input input {
+            flex-grow: 1;
+            border: none;
+            padding: 10px;
+        }
+    
+        #chat-input button {
+            border: none;
+            background: #007bff;
+            color: white;
+            padding: 10px 15px;
+        }
+    </style>
+    
+    <div id="chat-icon">
+        💬
+        {% if unread_chat_count > 0 %}
+            <span class="badge bg-danger" id="chat-unread-badge">{{ unread_chat_count }}</span>
+        {% endif %}
+    </div>
+    
+    <div id="chat-window">
+        <div id="chat-messages"></div>
+        <div id="chat-input">
+            <input type="text" id="message-input" placeholder="Nhập tin nhắn..." />
+            <button onclick="sendMessage()">Gửi</button>
+        </div>
+    </div>
+    
+    <script>
+    const chatIcon = document.getElementById('chat-icon');
+    const chatWindow = document.getElementById('chat-window');
+    const messageInput = document.getElementById('message-input');
+    const chatMessages = document.getElementById('chat-messages');
+
+    chatIcon.addEventListener('click', () => {
+        chatWindow.style.display = (chatWindow.style.display === 'none') ? 'flex' : 'none';
+
+        // Đánh dấu đã đọc khi mở chat
+        if (chatWindow.style.display === 'flex') {
+            fetch("{% url 'mark_chat_as_read' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const badge = document.getElementById('chat-unread-badge');
+                    if (badge) badge.remove();
+                }
+            });
+        }
+    });
+    
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message !== "") {
+                fetch("{% url 'send_chat_message' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({ message: message })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loadMessages();
+                    messageInput.value = '';
+                });
+            }
+        }
+    
+        function loadMessages() {
+            fetch("{% url 'get_chat_messages' %}")
+                .then(response => response.json())
+                .then(data => {
+                    chatMessages.innerHTML = '';
+                    data.messages.forEach(msg => {
+                        const p = document.createElement('p');
+                        p.innerHTML = `<strong>${msg.sender}:</strong> ${msg.content}`;
+                        chatMessages.appendChild(p);
+                    });
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                });
+        }
+    
+        setInterval(loadMessages, 3000); // Tự động reload tin nhắn mỗi 3s
+        document.addEventListener("DOMContentLoaded", loadMessages);
+    </script>
+
+    <script>
+        // Gửi bằng phím Enter
+        messageInput.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    </script>
+
+    <script>
+        // Đặt ngôn ngữ cho moment.js là tiếng Việt
+        moment.locale('vi');
+        
+        // Cập nhật thời gian tương đối
+        function updateRelativeTime() {
+            document.querySelectorAll('.time-ago').forEach(element => {
+                const timestamp = element.getAttribute('data-timestamp');
+                element.textContent = moment(timestamp).fromNow();
+            });
+        }
+        
+        // Cập nhật ngay khi trang tải
+        document.addEventListener('DOMContentLoaded', updateRelativeTime);
+        
+        // Cập nhật mỗi 60 giây
+        setInterval(updateRelativeTime, 60000);
+    </script>
+
+    <script>
+    function markNotificationAsRead(notificationId) {
+        fetch('{% url "mark_notification_as_read" notification_id=0 %}'.replace('0', notificationId), {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        }).then(data => {
+            if (data.status === 'success') {
+                console.log('Notification marked as read');
+            } else {
+                console.error('Error marking notification as read:', data.message);
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+    <script>
+        setInterval(function() {
+            fetch('{% url "manager_dashboard" %}?ajax=1', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Cập nhật số lượng thông báo chưa đọc
+                const badge = document.getElementById('unread-badge');
+                if (data.unread_count > 0) {
+                    if (badge) {
+                        badge.textContent = data.unread_count;
+                    } else {
+                        const bellLink = document.querySelector('#notification-bell');
+                        const newBadge = document.createElement('span');
+                        newBadge.className = 'badge bg-danger';
+                        newBadge.id = 'unread-badge';
+                        newBadge.textContent = data.unread_count;
+                        bellLink.appendChild(newBadge);
+                    }
+                } else if (badge) {
+                    badge.remove();
+                }
+
+                // Cập nhật danh sách thông báo trong modal
+                const notificationList = document.querySelector('.notification-list');
+                notificationList.innerHTML = ''; // Xóa danh sách cũ
+                if (data.notifications.length > 0) {
+                    data.notifications.forEach(notification => {
+                        const div = document.createElement('div');
+                        div.className = `notification-item ${notification.is_read ? 'read' : 'unread'}`;
+                        div.setAttribute('data-notification-id', notification.notification_id);
+                        div.innerHTML = `
+                            <div>
+                                <a href="${notification.url}" onclick="markNotificationAsRead(${notification.notification_id})">${notification.message}</a>
+                                <small class="text-muted d-block">${new Date(notification.created_at).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</small>
+                            </div>
+                            ${notification.is_read ? '<span class="text-success">Đã đọc</span>' : `
+                                <form class="mark-read-form" data-notification-id="${notification.notification_id}">
+                                    <input type="hidden" name="notification_id" value="${notification.notification_id}">
+                                    <button type="submit" class="btn btn-sm btn-primary">Đánh dấu đã đọc</button>
+                                </form>
+                            `}
+                        `;
+                        notificationList.appendChild(div);
+                    });
+                } else {
+                    notificationList.innerHTML = '<p>Không có thông báo nào.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error updating notifications:', error);
+            });
+        }, 10000); // Cập nhật mỗi 10 giây
+    </script>
+</body>
+</html>
