@@ -1,0 +1,636 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Responsive Admin & Dashboard Template based on Bootstrap 5">
+    <meta name="author" content="AdminKit">
+    <meta name="keywords" content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="shortcut icon" href="img/icons/icon-48x48.png" />
+
+    <link rel="canonical" href="https://demo-basic.adminkit.io/" />
+
+    <title>Sản phẩm - Trưởng phòng</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/app.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
+
+    <style>
+        .pagination {
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .pagination .page-item {
+            margin: 0 5px;
+        }
+
+        .pagination .page-link {
+            border: 1px solid #ddd;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #007bff;
+            background-color: #fff;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .pagination .page-link:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #ccc;
+            border-color: #ddd;
+            pointer-events: none;
+        }
+
+        .pagination .page-link {
+            border-radius: 5px;
+        }
+
+        .custom-pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .custom-pagination .page-item {
+            display: inline-block;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            color: #007bff;
+            font-size: 16px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .custom-pagination .page-item:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .custom-pagination .page-item.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .custom-pagination .page-item.disabled {
+            color: #ccc;
+            border-color: #ddd;
+            pointer-events: none;
+        }
+
+        .custom-pagination .page-item {
+            padding: 10px 20px;
+            font-weight: bold;
+        }
+
+        .custom-pagination .page-item:first-child {
+            border-radius: 5px 0 0 5px;
+        }
+
+        .custom-pagination .page-item:last-child {
+            border-radius: 0 5px 5px 0;
+        }
+
+        .modal-content {
+            border-radius: 10px;
+        }
+        .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .modal-body {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .notification-item {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notification-item.unread {
+            background-color: #e9ecef;
+        }
+        .notification-item.read {
+            background-color: #ffffff;
+        }
+        .notification-item a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .notification-item a:hover {
+            text-decoration: underline;
+        }
+
+        .progress-bar {
+            background-color: #28a745; /* Màu xanh lá cho thanh tiến độ */
+        }
+
+        /* Tùy chỉnh thanh cuộn */
+        .notification-list::-webkit-scrollbar {
+            width: 8px; /* Độ rộng thanh cuộn */
+        }
+        .notification-list::-webkit-scrollbar-thumb {
+            background-color: #888; /* Màu thanh cuộn */
+            border-radius: 4px;
+        }
+        .notification-list::-webkit-scrollbar-thumb:hover {
+            background-color: #555; /* Màu khi hover */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <nav id="sidebar" class="sidebar js-sidebar">
+            <div class="sidebar-content js-simplebar">
+                <a class="sidebar-brand" href="{% url 'manager_dashboard' %}">
+                    <span class="align-middle">QUẢN LÝ</span>
+                </a>
+
+                <ul class="sidebar-nav">
+                    <li class="sidebar-header">
+                        QUẢN LÝ
+                    </li>
+                
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{% url 'manager_dashboard' %}">
+                            <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Trang chủ</span>
+                        </a>
+                    </li>
+
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="#" id="notification-bell" data-bs-toggle="modal" data-bs-target="#notificationModal">
+                            <i class="align-middle" data-feather="bell"></i> <span class="align-middle">Thông báo</span>
+                            {% if unread_count > 0 %}
+                                <span class="badge bg-danger" id="unread-badge">{{ unread_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                
+                    <li class="sidebar-header">
+                        Quản lý
+                    </li>
+                
+                    <li class="sidebar-item active">
+                        <a class="sidebar-link" href="{% url 'manager_product_list' %}">
+                            <i class="align-middle" data-feather="check-square"></i>
+                            <span class="align-middle">Sản phẩm</span>
+                        </a>
+                    </li>
+                
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="{% url 'logout' %}">
+                            <i class="align-middle" data-feather="check-square"></i>
+                            <span class="align-middle">Đăng xuất</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div class="main">
+            <main class="content">
+                <div class="container-fluid p-0">
+                    <h1 class="h3 mb-3"><strong>Sản phẩm</strong></h1>
+            
+                    <form action="{{ request.path }}" method="GET" class="mb-3">
+                        <input type="text" name="search" value="{{ search_query }}" placeholder="Search products..." class="form-control d-inline-block w-25">
+                        <button type="submit" class="btn btn-primary ml-2">Tìm kiếm</button>
+                    </form>
+                    <div class="mb-3">
+                        <button onclick="window.location.href='{% url 'manager_dashboard' %}'" class="btn btn-secondary">Quay trở lại</button>
+                    </div>
+            
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12 d-flex">
+                                <div class="card flex-fill">
+                                    <table class="table table-hover my-0">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Tên sản phẩm</th>
+                                                <th>File</th>
+                                                <th>Trạng thái</th>
+                                                <th>Tiến độ</th> <!-- Thêm cột Tiến độ -->
+                                                <th>Phản hồi</th>
+                                                <th>Ngày tạo</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="product-list">
+                                            {% for product in products %}
+                                            <tr data-product-id="{{ product.product_id }}">
+                                                <td>{{ product.product_id }}</td>
+                                                <td>{{ product.name }}</td>
+                                                <td>
+                                                    {% if product.file_path %}
+                                                        <a href="http://localhost:8000/media/{{ product.file_path }}" class="btn btn-success btn-sm" target="_blank">Xem tệp tin</a>
+                                                    {% else %}
+                                                        Không có tệp
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if product.status == 'Đã phát hành' %}
+                                                        <span class="badge bg-success">Đã phát hành</span>
+                                                    {% else %}
+                                                        <form action="{% url 'manager_update_status' product.product_id %}" method="POST" style="display:inline;">
+                                                            {% csrf_token %}
+                                                            <select name="status" class="form-control form-control-sm" onchange="this.form.submit()">
+                                                                <option value="Chờ phát hành" {% if product.status == 'Chờ phát hành' %}selected{% endif %}>Chờ phát hành</option>
+                                                                <option value="Đã phát hành" {% if product.status == 'Đã phát hành' %}selected{% endif %}>Đã phát hành</option>
+                                                                <option value="Đã huỷ" {% if product.status == 'Đã huỷ' %}selected{% endif %}>Đã huỷ</option>
+                                                            </select>
+                                                        </form>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <div class="progress">
+                                                        <div class="progress-bar" role="progressbar" style="width: {{ product.progress }}%;" aria-valuenow="{{ product.progress }}" aria-valuemin="0" aria-valuemax="100">
+                                                            {{ product.progress }}%
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <a href="{% url 'manager_products_feedback_list' product.product_id %}" class="btn btn-info btn-sm">Xem các phản hồi</a>
+                                                </td>
+                                                <td>{{ product.created_at|date:"d/m/Y" }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                            {% if not products %}
+                                            <tr>
+                                                <td colspan="8" class="text-center">Không tìm thấy sản phẩm nào.</td>
+                                            </tr>
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <!-- Modal hiển thị thông báo -->
+            <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="notificationModalLabel">Thông báo</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="notification-list">
+                                {% for notification in notifications %}
+                                <div class="notification-item {% if not notification.is_read %}unread{% else %}read{% endif %}" data-notification-id="{{ notification.notification_id }}">
+                                    <div>
+                                        <a href="{{ notification.url }}" onclick="markNotificationAsRead({{ notification.notification_id }})">{{ notification.message }}</a>
+                                        <small class="text-muted d-block time-ago" data-timestamp="{{ notification.created_at.isoformat }}">{{ notification.created_at|date:"d/m/Y H:i" }}</small>
+                                    </div>
+                                    {% if not notification.is_read %}
+                                        <form class="mark-read-form" data-notification-id="{{ notification.notification_id }}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="notification_id" value="{{ notification.notification_id }}">
+                                            <button type="submit" class="btn btn-sm btn-primary">Đánh dấu đã đọc</button>
+                                        </form>
+                                    {% else %}
+                                        <span class="text-success">Đã đọc</span>
+                                    {% endif %}
+                                </div>
+                                {% empty %}
+                                    <p>Không có thông báo nào.</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="footer">
+                <div class="container-fluid">
+                    <div class="row text-muted">
+                        <div class="col-6 text-start">
+                            <p class="mb-0">
+                                <a class="text-muted" href="" target="_blank"><strong>Python Django</strong></a> &copy;
+                            </p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <ul class="list-inline">
+                                <li class="list-inline-item">
+                                    <a class="text-muted" href="" target="_blank">Support</a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a class="text-muted" href="" target="_blank">Help Center</a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a class="text-muted" href="" target="_blank">Privacy</a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a class="text-muted" href="" target="_blank">Terms</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Thêm Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+
+    <script>
+        // Định nghĩa các URL mẫu
+        const feedbackListUrlTemplate = "{% url 'manager_products_feedback_list' 0 %}";
+        const updateStatusUrlTemplate = "{% url 'manager_update_status' 0 %}";
+    
+        // Hàm cập nhật danh sách sản phẩm
+        function updateProductList() {
+            const searchQuery = document.querySelector('input[name="search"]').value;
+            let url = '{% url "manager_product_list" %}?ajax=1';
+            if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
+    
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const productList = document.getElementById('product-list');
+                productList.innerHTML = ''; // Xóa danh sách cũ
+    
+                if (data.products.length > 0) {
+                    data.products.forEach(product => {
+                        const row = document.createElement('tr');
+                        row.setAttribute('data-product-id', product.product_id);
+                        row.innerHTML = `
+                            <td>${product.product_id}</td>
+                            <td>${product.name}</td>
+                            <td>
+                                ${product.file_path ? 
+                                    `<a href="http://localhost:8000/media/${product.file_path}" class="btn btn-success btn-sm" target="_blank">Xem tệp tin</a>` : 
+                                    'Không có tệp'}
+                            </td>
+                            <td>
+                                ${product.status === 'Đã phát hành' ? 
+                                    '<span class="badge bg-success">Đã phát hành</span>' : 
+                                    `
+                                    <form action="${updateStatusUrlTemplate.replace('0', product.product_id)}" method="POST" style="display:inline;">
+                                        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                                        <select name="status" class="form-control form-control-sm" onchange="this.form.submit()">
+                                            <option value="Chờ phát hành" ${product.status === 'Chờ phát hành' ? 'selected' : ''}>Chờ phát hành</option>
+                                            <option value="Đã phát hành" ${product.status === 'Đã phát hành' ? 'selected' : ''}>Đã phát hành</option>
+                                            <option value="Đã huỷ" ${product.status === 'Đã huỷ' ? 'selected' : ''}>Đã huỷ</option>
+                                        </select>
+                                    </form>
+                                    `}
+                            </td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" style="width: ${product.progress}%;" aria-valuenow="${product.progress}" aria-valuemin="0" aria-valuemax="100">
+                                        ${product.progress}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <a href="${feedbackListUrlTemplate.replace('0', product.product_id)}" class="btn btn-info btn-sm">Xem các phản hồi</a>
+                            </td>
+                            <td>${product.created_at}</td>
+                        `;
+                        productList.appendChild(row);
+                    });
+                } else {
+                    productList.innerHTML = '<tr><td colspan="8" class="text-center">Không tìm thấy sản phẩm nào.</td></tr>';
+                }
+    
+                // Cập nhật số lượng thông báo chưa đọc
+                const badge = document.getElementById('unread-badge');
+                if (data.unread_count > 0) {
+                    if (badge) {
+                        badge.textContent = data.unread_count;
+                    } else {
+                        const bellLink = document.querySelector('#notification-bell');
+                        const newBadge = document.createElement('span');
+                        newBadge.className = 'badge bg-danger';
+                        newBadge.id = 'unread-badge';
+                        newBadge.textContent = data.unread_count;
+                        bellLink.appendChild(newBadge);
+                    }
+                } else if (badge) {
+                    badge.remove();
+                }
+            })
+            .catch(error => {
+                console.error('Error updating product list:', error);
+            });
+        }
+
+        // Tự động cập nhật danh sách sản phẩm mỗi 10 giây
+        setInterval(updateProductList, 10000);
+
+        // Gọi ngay khi trang tải để đảm bảo cập nhật lần đầu
+        document.addEventListener('DOMContentLoaded', updateProductList);
+
+        // Xử lý "Mark as Read"
+        document.addEventListener('submit', function(e) {
+            if (e.target && e.target.classList.contains('mark-read-form')) {
+                e.preventDefault();
+                const form = e.target;
+                const notificationId = form.querySelector('input[name="notification_id"]').value;
+                console.log('Submitting notification ID:', notificationId); // Debug
+                if (!notificationId) {
+                    console.error('Notification ID is missing!');
+                    alert('Lỗi: Không tìm thấy ID thông báo.');
+                    return;
+                }
+
+                const notificationItem = form.closest('.notification-item');
+                const formData = new FormData(form);
+
+                fetch('{% url "notifications_list" %}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        notificationItem.classList.remove('unread');
+                        notificationItem.classList.add('read');
+
+                        const readSpan = document.createElement('span');
+                        readSpan.className = 'text-success';
+                        readSpan.textContent = 'Đã đọc';
+                        form.replaceWith(readSpan);
+
+                        const badge = document.getElementById('unread-badge');
+                        if (badge) {
+                            const newCount = data.unread_count;
+                            if (newCount > 0) {
+                                badge.textContent = newCount;
+                            } else {
+                                badge.remove();
+                                const bellLink = document.querySelector('#notification-bell');
+                                bellLink.classList.remove('active');
+                            }
+                        }
+                    } else {
+                        console.error('Error:', data.message);
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error marking as read:', error);
+                    alert('Có lỗi xảy ra khi đánh dấu đã đọc.');
+                });
+            }
+        });
+
+        // Tự động cập nhật thông báo mỗi 10 giây
+        setInterval(function() {
+            fetch('{% url "manager_dashboard" %}?ajax=1', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Cập nhật số lượng thông báo chưa đọc
+                const badge = document.getElementById('unread-badge');
+                if (data.unread_count > 0) {
+                    if (badge) {
+                        badge.textContent = data.unread_count;
+                    } else {
+                        const bellLink = document.querySelector('#notification-bell');
+                        const newBadge = document.createElement('span');
+                        newBadge.className = 'badge bg-danger';
+                        newBadge.id = 'unread-badge';
+                        newBadge.textContent = data.unread_count;
+                        bellLink.appendChild(newBadge);
+                    }
+                } else if (badge) {
+                    badge.remove();
+                }
+
+                // Cập nhật danh sách thông báo trong modal
+                const notificationList = document.querySelector('.notification-list');
+                notificationList.innerHTML = ''; // Xóa danh sách cũ
+                if (data.notifications.length > 0) {
+                    data.notifications.forEach(notification => {
+                        const div = document.createElement('div');
+                        div.className = `notification-item ${notification.is_read ? 'read' : 'unread'}`;
+                        div.setAttribute('data-notification-id', notification.notification_id);
+                        div.innerHTML = `
+                            <div>
+                                <a href="${notification.url}" onclick="markNotificationAsRead(${notification.notification_id})">${notification.message}</a>
+                                <small class="text-muted d-block">${new Date(notification.created_at).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</small>
+                            </div>
+                            ${notification.is_read ? '<span class="text-success">Đã đọc</span>' : `
+                                <form class="mark-read-form" data-notification-id="${notification.notification_id}">
+                                    <input type="hidden" name="notification_id" value="${notification.notification_id}">
+                                    <button type="submit" class="btn btn-sm btn-primary">Đánh dấu đã đọc</button>
+                                </form>
+                            `}
+                        `;
+                        notificationList.appendChild(div);
+                    });
+                } else {
+                    notificationList.innerHTML = '<p>Không có thông báo nào.</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Error updating notifications:', error);
+            });
+        }, 10000); // Cập nhật mỗi 10 giây
+    </script>
+
+    <script>
+        // Đặt ngôn ngữ cho moment.js là tiếng Việt
+        moment.locale('vi');
+        
+        // Cập nhật thời gian tương đối
+        function updateRelativeTime() {
+            document.querySelectorAll('.time-ago').forEach(element => {
+                const timestamp = element.getAttribute('data-timestamp');
+                element.textContent = moment(timestamp).fromNow();
+            });
+        }
+        
+        // Cập nhật ngay khi trang tải
+        document.addEventListener('DOMContentLoaded', updateRelativeTime);
+        
+        // Cập nhật mỗi 60 giây
+        setInterval(updateRelativeTime, 60000);
+    </script>
+
+    <script>
+        function markNotificationAsRead(notificationId) {
+            fetch('{% url "mark_notification_as_read" notification_id=0 %}'.replace('0', notificationId), {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            }).then(data => {
+                if (data.status === 'success') {
+                    console.log('Notification marked as read');
+                } else {
+                    console.error('Error marking notification as read:', data.message);
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+
+</body>
+
+</html>
