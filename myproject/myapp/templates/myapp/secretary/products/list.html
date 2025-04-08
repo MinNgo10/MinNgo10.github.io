@@ -163,6 +163,7 @@
         .notification-list::-webkit-scrollbar-thumb:hover {
             background-color: #555; /* Màu khi hover */
         }
+        
     </style>
 </head>
 
@@ -177,7 +178,7 @@
                     <li class="sidebar-header">
                         THƯ KÝ
                     </li>
-                    <li class="sidebar-item active">
+                    <li class="sidebar-item {% if current_page == 'dashboard' %}active{% endif %}">
                         <a class="sidebar-link" href="{% url 'secretary_dashboard' %}">
                             <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Trang chủ</span>
                         </a>
@@ -193,7 +194,7 @@
                     <li class="sidebar-header">
                         Quản lý
                     </li>
-                    <li class="sidebar-item">
+                    <li class="sidebar-item {% if current_page == 'product_list' %}active{% endif %}">
                         <a class="sidebar-link" href="{% url 'secretary_product_list' %}">
                             <i class="align-middle" data-feather="check-square"></i>
                             <span class="align-middle">Sản phẩm</span>

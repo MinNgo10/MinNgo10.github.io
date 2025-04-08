@@ -193,6 +193,7 @@ def designer_dashboard(request):
         ]
 
         context = {
+            'current_page': 'dashboard',
             'num_designers': num_designers,
             'num_managers': num_managers,
             'num_secretary': num_secretary,
@@ -267,6 +268,7 @@ def manager_dashboard(request):
         ]
 
         context = {
+            'current_page': 'dashboard',
             'num_designers': num_designers,
             'num_managers': num_managers,
             'num_secretary': num_secretary,
@@ -342,6 +344,7 @@ def secretary_dashboard(request):
         print(f"User: {request.user.username}, Notifications count: {notifications.count()}")
 
         context = {
+            'current_page': 'dashboard',
             'num_designers': num_designers,
             'num_managers': num_managers,
             'num_secretary': num_secretary,
@@ -406,6 +409,7 @@ def secretary_product_list(request):
         })
 
     context = {
+        'current_page': 'product_list',
         'products': products,
         'search_query': search_query,
         'unread_count': unread_count,
@@ -669,6 +673,7 @@ def designer_product_list(request):
         })
 
     context = {
+        'current_page': 'product_list',
         'products': products,
         'search_query': search_query,
         'status_filter': status_filter,  # Thêm status_filter vào context để sử dụng trong template
@@ -856,6 +861,7 @@ def manager_product_list(request):
         })
 
     context = {
+        'current_page': 'product_list',
         'products': products,
         'search_query': search_query,  # Truyền giá trị tìm kiếm để giữ trong input
         'unread_count': unread_count,
