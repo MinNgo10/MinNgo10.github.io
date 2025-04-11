@@ -137,15 +137,12 @@ def designer_dashboard(request):
         # Lấy ngày hiện tại nếu không có ngày được chọn
         selected_date = request.GET.get('date', timezone.now().date().isoformat())
         date = parse_date(selected_date)
-
         if not date:
             date = timezone.now().date()
-
         num_designers = CustomUser.objects.filter(role='Người thiết kế').count()
         num_managers = CustomUser.objects.filter(role='Trưởng phòng').count()
         num_secretary = CustomUser.objects.filter(role='Thư ký').count()
         num_products = Product.objects.count()
-
         num_products_dang_thiet_ke = Product.objects.filter(
             status='Đang được thiết kế', created_at__date=date
         ).count()
@@ -158,7 +155,6 @@ def designer_dashboard(request):
         num_products_da_phat_hanh = Product.objects.filter(
             status='Đã phát hành', created_at__date=date
         ).count()
-
         # Tổng số sản phẩm theo trạng thái (không lọc theo ngày)
         total_dang_thiet_ke = Product.objects.filter(status='Đang được thiết kế').count()
         total_dang_chua_phat_hanh = Product.objects.filter(status='Chờ phát hành').count()
@@ -166,9 +162,7 @@ def designer_dashboard(request):
         total_da_phat_hanh = Product.objects.filter(status='Đã phát hành').count()
         unread_count = request.user.notifications.filter(is_read=False).count()
         unread_messages = ChatMessage.objects.filter(is_read=False).exclude(sender=request.user).count()
-
         notifications = request.user.notifications.all().order_by('-created_at')
-
         notifications_data = [
             {
                 'notification_id': notification.notification_id,
@@ -179,7 +173,6 @@ def designer_dashboard(request):
             }
             for notification in notifications
         ]
-
         context = {
             'current_page': 'dashboard',
             'num_designers': num_designers,
