@@ -48,21 +48,16 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('email')
         password = request.POST.get('pass')
-
         logger.debug(f"Login attempt with username: {username}")
-
         # Kiểm tra xem username và password có được cung cấp không
         if not username or not password:
             messages.error(request, 'Vui lòng nhập đầy đủ tài khoản và mật khẩu.')
             return redirect('login')
-
         user = authenticate(request, username=username, password=password)
-
         if user is not None:
             logger.debug(f"User {username} authenticated successfully")
             login(request, user)
             messages.success(request, 'Đăng nhập thành công!')
-
             if user.role == 'Thư ký':
                 return redirect('secretary_dashboard')
             elif user.role == 'Người thiết kế':
@@ -73,7 +68,6 @@ def login_view(request):
             logger.warning(f"Invalid login attempt for {username}")
             messages.error(request, 'Đăng nhập thất bại. Tài khoản hoặc mật khẩu không đúng.')
             return redirect('login')
-
     return render(request, 'myapp/login.html')
 
 def register_view(request):
