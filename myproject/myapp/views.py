@@ -422,14 +422,11 @@ def secretary_create_product(request):
             new_product = form.save(commit=False)
             new_product.created_by = request.user 
             designer_id = form.cleaned_data.get('designer')
-            
             if designer_id:
                 new_product.designer = CustomUser.objects.get(user_id=designer_id)
-            
             # Cập nhật tiến độ dựa trên trạng thái ban đầu
             new_product.status = 'Đang được thiết kế'  # Trạng thái mặc định
             new_product.progress = 25  # Tiến độ ban đầu là 25%
-            
             new_product.save() 
             # Tạo thông báo cho designer
             if designer_id:
@@ -443,7 +440,6 @@ def secretary_create_product(request):
             return redirect('secretary_product_list')  
     else:
         form = ProductForm()
-
     return render(request, 'myapp/secretary/products/create.html', {'form': form, 'designers': designers})
 
 
