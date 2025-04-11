@@ -76,27 +76,21 @@ def register_view(request):
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
         role = request.POST.get('role')
-
         if password != confirm_password:
             messages.error(request, "Passwords do not match.")
             return redirect('register')
-
         if CustomUser.objects.filter(username=username).exists():
             messages.error(request, "Username already exists.")
             return redirect('register')
-
         user = CustomUser.objects.create_user(username=username, password=password, role=role)
-
         login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         messages.success(request, 'Tạo tài khoản thành công!')  # Thêm thông báo thành công
-
         if role == 'Thư ký':
             return redirect('secretary_dashboard')
         elif role == 'Người thiết kế':
             return redirect('designer_dashboard')
         elif role == 'Trưởng phòng':
             return redirect('manager_dashboard')
-
     return render(request, 'myapp/register.html')
 
 
