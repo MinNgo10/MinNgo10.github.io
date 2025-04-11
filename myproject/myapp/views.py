@@ -357,21 +357,16 @@ def secretary_dashboard(request):
 def secretary_product_list(request):
     search_query = request.GET.get('search', '')
     status_filter = request.GET.get('status', '')
-
     # Bắt đầu với tất cả sản phẩm
     products = Product.objects.all()
-
     # Lọc theo search_query nếu có
     if search_query:
         products = products.filter(name__icontains=search_query)
-
     # Lọc theo status_filter nếu có
     if status_filter:
         products = products.filter(status=status_filter)
-
     unread_count = request.user.notifications.filter(is_read=False).count()
     notifications = request.user.notifications.all().order_by('-created_at')
-
     # Kiểm tra nếu là yêu cầu AJAX
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         products_data = [
@@ -506,7 +501,6 @@ from django.contrib.auth.decorators import login_required
 @role_required('Thư ký')
 def secretary_create_feedback(request, request_id):
     design_request = get_object_or_404(DesignRequest, request_id=request_id)
-
     if request.method == 'POST':
         form = RequestFeedbackForm(request.POST)
         if form.is_valid():
@@ -515,7 +509,6 @@ def secretary_create_feedback(request, request_id):
             feedback.sender = request.user    
             feedback.receiver = design_request.designer  
             feedback.save()
-            
             # Tạo thông báo cho Người thiết kế
             product = design_request.product  # Lấy sản phẩm liên quan đến yêu cầu thiết kế
             notification_url = reverse('designer_designrequests_feedback_list', kwargs={'request_id': design_request.request_id})
@@ -531,7 +524,6 @@ def secretary_create_feedback(request, request_id):
             return redirect('secretary_feedback_list', request_id=request_id)
     else:
         form = RequestFeedbackForm()
-
     return render(request, 'myapp/secretary/feedback/create.html', {
         'form': form,
         'design_request': design_request,
@@ -552,14 +544,11 @@ def secretary_products_feedback_list(request, product_id):
 def secretary_update_status(request, request_id):
     design_request = get_object_or_404(DesignRequest, request_id=request_id)
     new_status = request.POST.get('status')
-
     # Lấy đối tượng product ngay từ đầu để tránh lỗi UnboundLocalError
     product = design_request.product
-
     # Cập nhật trạng thái của yêu cầu thiết kế
     design_request.status = new_status
     design_request.save()
-
     # Logic thông báo tùy theo trạng thái
     if new_status == 'Chấp nhận':
         product = design_request.product
@@ -569,7 +558,6 @@ def secretary_update_status(request, request_id):
         product.progress = 75  # Cập nhật tiến độ khi chuyển sang "Chờ phát hành"
         product.save()
         messages.success(request, 'Sản phẩm đã được chấp nhận, đang chờ được phát hành!')
-
         managers = CustomUser.objects.filter(role='Trưởng phòng')
         notification_url = reverse('manager_product_list')
         for manager in managers:
@@ -674,15 +662,12 @@ def designer_design_request_list(request, product_id):
 @role_required('Người thiết kế')
 def designer_create_design_request(request, product_id):
     product = Product.objects.get(pk=product_id)
-    
     if request.user.role != 'Người thiết kế':
         return HttpResponse("403 Forbidden", status=403)
-
     if request.method == "POST":
         form = DesignRequestForm(request.POST, request.FILES)
         form.instance.designer = request.user
         form.instance.product = product
-
         if form.is_valid():
             try:
                 design_request = form.save(commit=False)
@@ -692,7 +677,6 @@ def designer_create_design_request(request, product_id):
                     fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'design_requests'))
                     filename = fs.save(file.name, file)
                     design_request.file_path = os.path.join('design_requests', filename)
-                
                 design_request.save()
                 # Tạo thông báo cho Thư ký
                 notification_url = reverse('secretary_design_request_list', kwargs={'product_id': product.product_id})
@@ -707,17 +691,14 @@ def designer_create_design_request(request, product_id):
                 logger.info(f"Design request created for product {product_id} by {request.user.username}, notification sent to secretaries")
                 messages.success(request, "Yêu cầu thiết kế đã được tạo thành công!")
                 return redirect('designer_product_list')
-
             except Exception as e:
                 logger.error(f"Error creating design request for product {product_id} by {request.user.username}: {e}")
                 return HttpResponse("An error occurred while creating the design request.", status=500)
         else:
             logger.warning(f"Form for design request is invalid: {form.errors}")
             return HttpResponse("Form submission is invalid.", status=400)
-
     else:
         form = DesignRequestForm(initial={'designer': request.user})
-
     return render(request, 'myapp/designer/design/create.html', {
         'form': form,
         'product': product
@@ -728,21 +709,16 @@ def designer_create_design_request(request, product_id):
 @role_required('Người thiết kế')
 def designer_edit_design_request(request, request_id):
     design_request = get_object_or_404(DesignRequest, request_id=request_id)
-
     if request.user != design_request.designer:
         logger.warning(f"Unauthorized access attempt by {request.user.username} to edit design request {request_id}")
         return HttpResponse("403 Forbidden", status=403)
-
     if request.method == "POST":
         form = DesignRequestForm(request.POST, request.FILES, instance=design_request)
         if form.is_valid():
             updated_design_request = form.save(commit=False)
-
             if 'file' in request.FILES:
                 updated_design_request.file_path = request.FILES['file']
-
             updated_design_request.save()
-
             # Tạo thông báo cho Thư ký
             product = updated_design_request.product
             notification_url = reverse('secretary_design_request_list', kwargs={'product_id': product.product_id})
@@ -850,16 +826,13 @@ def manager_product_list(request):
 def manager_update_status(request, product_id):
     product = get_object_or_404(Product, product_id=product_id)
     new_status = request.POST.get('status')
-
     product.status = new_status
     if new_status == 'Đã phát hành':
         product.progress = 100  # Cập nhật tiến độ khi phát hành
     elif new_status == 'Đã huỷ':
         product.progress = 0  # Cập nhật tiến độ khi hủy
     product.save()
-
     messages.success(request, 'Sản phẩm đã được phát hành')
-
     # Tạo thông báo cho Thư ký (created_by)
     if new_status == 'Đã phát hành':
         notification_url = reverse('secretary_product_list')
@@ -868,7 +841,6 @@ def manager_update_status(request, product_id):
             message=f"Sản phẩm '{product.name}' đã được phát hành.",
             url=notification_url
         )
-
     return redirect('manager_product_list')
 
 from django.shortcuts import render, get_object_or_404, redirect
@@ -901,7 +873,6 @@ def manager_products_feedback_list(request, product_id):
 @role_required('Trưởng phòng')
 def manager_create_feedback(request, product_id):
     product = get_object_or_404(Product, product_id=product_id)
-
     if request.method == 'POST':
         form = ProductFeedbackForm(request.POST)
         if form.is_valid():
@@ -910,12 +881,10 @@ def manager_create_feedback(request, product_id):
             feedback.sender = request.user    
             feedback.receiver = product.created_by  
             feedback.save()
-
             # Cập nhật trạng thái sản phẩm thành "Đang được thiết kế"
             product.status = 'Đang được thiết kế'
             product.progress = 25  # Cập nhật tiến độ khi chuyển về "Đang được thiết kế"
             product.save()
-
             # Tạo thông báo cho Thư ký
             notification_url = reverse('secretary_products_feedback_list', kwargs={'product_id': product.product_id})
             Notification.objects.create(
@@ -923,7 +892,6 @@ def manager_create_feedback(request, product_id):
                 message=f"Trưởng phòng đã gửi phản hồi cho sản phẩm '{product.name}'. Trạng thái đã chuyển về 'Đang được thiết kế'.",
                 url=notification_url
             )
-            
             return redirect('manager_products_feedback_list', product_id=product_id)
     else:
         form = ProductFeedbackForm()
